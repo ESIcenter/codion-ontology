@@ -5,6 +5,7 @@ version: 1.0.0
 date-released: 2026-11-10
 type: dataset
 license: CC-BY-4.0
+doi: 10.5281/zenodo.24103509
 repository-code: "https://github.com/ESIcenter/codion-ontology"
 abstract: >-
   CODION is an OWL 2 ontology for knowledge-graph representation of

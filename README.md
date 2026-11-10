@@ -1,6 +1,6 @@
 # CODION: Cognitive Operations, Disinformation and Influence Ontology
 
-<!-- DOI badge: added after the Zenodo release -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24103509.svg)](https://doi.org/10.5281/zenodo.24103509)
 
 CODION is an OWL 2 ontology for knowledge-graph representation of disinformation campaigns, influence operations and cognitive warfare. It connects content, actors, targets, operations, consequences, countermeasures and evidence in one model, and aligns with DISARM, FIMI, STIX 2.1, MITRE ATT&CK, ABCDE, ENISA, AMAS, RESIST and ETSI TR 104 159.
 
@@ -69,7 +69,7 @@ Expected result: 1, 2, 1, 1, 1 and 6 rows. Without an OWL reasoner, the symmetri
 
 The accompanying article, "CODION: An OWL Ontology for Knowledge-Graph Representation of Disinformation Campaigns and Cognitive Warfare" by T. Tagarev and G. Sharkov, is under review. Until it is published, please cite this release:
 
-Tagarev, T.; Sharkov, G. *CODION: Cognitive Operations, Disinformation and Influence Ontology*, version 1.0.0. Zenodo, 2026. DOI to be added.
+Tagarev, T.; Sharkov, G. *CODION: Cognitive Operations, Disinformation and Influence Ontology*, version 1.0.0. Zenodo, 2026. https://doi.org/10.5281/zenodo.24103509
 
 See also `CITATION.cff`.
 
