@@ -1,0 +1,81 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix codion: <https://ontology.cogops.eu/codion#> .
+@prefix ex:   <https://example.org/codion-test#> .
+
+# ===========================================================================
+#  CODION v1.0 test graph: a small, fictitious population that exercises the
+#  six competency scenarios of the CODION v1.0 publication. All entities are
+#  invented. Each block lists the scenario it serves and the expected result.
+# ===========================================================================
+
+# --- Scenario 1: coordinated behaviour (expected: one row, ex:post1/ex:post2) ---
+ex:post1 a codion:SocialPost ; codion:hasAuthor ex:actorA ; codion:coordinatedWith ex:post2 .
+ex:post2 a codion:SocialPost ; codion:hasAuthor ex:actorB .
+ex:post3 a codion:SocialPost ; codion:hasAuthor ex:actorC ; codion:coordinatedWith ex:post4 .   # actorC scores low: excluded
+ex:post4 a codion:SocialPost ; codion:hasAuthor ex:actorB .
+ex:actorA a codion:Person ; rdfs:label "Actor A" .
+ex:actorB a codion:Person ; rdfs:label "Actor B" .
+ex:actorC a codion:Person ; rdfs:label "Actor C" .
+ex:assessA a codion:ActorAssessment ; codion:assessedActor ex:actorA ;
+    codion:actorAssessmentMetric "CoordinatedBehaviour" ; codion:actorAssessmentValue "0.86"^^xsd:float ;
+    codion:actorAssessmentMethod "temporal co-posting analysis" ; codion:actorAssessmentConfidence "0.7"^^xsd:float .
+ex:assessB a codion:ActorAssessment ; codion:assessedActor ex:actorB ;
+    codion:actorAssessmentMetric "CoordinatedBehaviour" ; codion:actorAssessmentValue "0.91"^^xsd:float .
+ex:assessC a codion:ActorAssessment ; codion:assessedActor ex:actorC ;
+    codion:actorAssessmentMetric "CoordinatedBehaviour" ; codion:actorAssessmentValue "0.32"^^xsd:float .
+
+# --- Scenario 2: institutional and decision-process targeting (expected: two rows, 0.85 then 0.60) ---
+ex:campaign1 a codion:Campaign ; rdfs:label "Campaign 1" .
+ex:electoralCommission a codion:Institution ; rdfs:label "Electoral Commission" .
+ex:countingProcess a codion:Activity ; rdfs:label "Vote-counting process" .
+ex:publicAudience a codion:GeneralPublicAudience ; codion:audienceType "GeneralPublicAudience" .
+ex:tr1 a codion:TargetingRelation ; codion:targetingSource ex:campaign1 ; codion:targetedEntity ex:electoralCommission ;
+    codion:targetRole "InstitutionalTarget" ; codion:targetingConfidence "0.85"^^xsd:float .
+ex:tr2 a codion:TargetingRelation ; codion:targetingSource ex:campaign1 ; codion:targetedEntity ex:countingProcess ;
+    codion:targetRole "DecisionProcessTarget" ; codion:targetingConfidence "0.60"^^xsd:float .
+ex:tr3 a codion:TargetingRelation ; codion:targetingSource ex:campaign1 ; codion:targetedEntity ex:publicAudience ;
+    codion:targetRole "PrimaryTarget" ; codion:targetingConfidence "0.90"^^xsd:float .           # audience target: excluded
+
+# --- Scenario 3: operational role vs measured network position (expected: one row, Actor A) ---
+ex:part1 a codion:ActorParticipation ; codion:participatingActor ex:actorA ; codion:participationRelatedEntity ex:campaign1 ;
+    codion:participationRole "Coordinator" .
+ex:part2 a codion:ActorParticipation ; codion:participatingActor ex:actorB ; codion:participationRelatedEntity ex:campaign1 ;
+    codion:participationRole "Amplifier" .                                                    # role and position agree: excluded
+ex:actorA codion:actorHasNetworkPosition ex:np1 .
+ex:actorB codion:actorHasNetworkPosition ex:np2 .
+ex:np1 a codion:NetworkPositionAssertion ; codion:networkPositionRole "Amplifier" ;
+    codion:networkPositionNetwork "Test reposting network" ; codion:networkPositionMetric "betweenness centrality" ;
+    codion:networkPositionValue "0.63"^^xsd:float .
+ex:np2 a codion:NetworkPositionAssertion ; codion:networkPositionRole "Amplifier" .
+
+# --- Scenario 4: vulnerability-to-harm pathway (expected: one complete path) ---
+ex:vuln1 a codion:CognitiveOverload ; rdfs:label "Information overload during the election week" .
+ex:effect1 a codion:ImmediateEffect ; codion:immediateEffectDescription "Share of exposed users believing the false claim rose" .
+ex:outcome1 a codion:Outcome ; codion:outcomeDescription "Trust in the electoral commission declined" .
+ex:impact1 a codion:Impact ; codion:impactMagnitude "0.4"^^xsd:float .
+ex:harm1 a codion:Harm ; codion:harmCategory "DISINFORM" ; codion:harmSubCategory "ElectionManipulation" .
+ex:vuln1 codion:vulnerabilityContributesToEffect ex:effect1 .
+ex:effect1 codion:immediateEffectLeadsToOutcome ex:outcome1 .
+ex:outcome1 codion:outcomeManifestsAsImpact ex:impact1 .
+ex:impact1 codion:impactEscalatesToHarm ex:harm1 .
+
+# --- Scenario 5: context-specific topic exploitability (expected: one row, 0.82) ---
+ex:topicMigration a codion:Topic ; codion:topicLabel "Migration" .
+ex:locA a codion:CountryLocation ; codion:locationName "Country A" .
+ex:locB a codion:CountryLocation ; codion:locationName "Country B" .
+ex:ta1 a codion:TopicAssessment ; codion:assessedTopic ex:topicMigration ; codion:assessmentContextLocation ex:locA ;
+    codion:topicExploitabilityScore "0.82"^^xsd:float ; codion:topicAssessmentConfidence "0.7"^^xsd:float .
+ex:ta2 a codion:TopicAssessment ; codion:assessedTopic ex:topicMigration ; codion:assessmentContextLocation ex:locB ;
+    codion:topicExploitabilityScore "0.35"^^xsd:float ; codion:topicAssessmentConfidence "0.6"^^xsd:float .   # below threshold: excluded
+
+# --- Scenario 6: audience progression (expected: six rows in lifecycle order 1-6) ---
+ex:voters a codion:PoliticalAudience ; codion:audienceType "PoliticalAudience" .
+ex:rel4 a codion:AudienceRelationship ; codion:audienceRelationshipType "ExposedAudience"  ; codion:audienceRelationshipStageOrder 4 ; codion:audienceRelationshipConfidence "0.70"^^xsd:float ; codion:relationshipInvolvesAudience ex:voters .
+ex:rel1 a codion:AudienceRelationship ; codion:audienceRelationshipType "IntendedAudience" ; codion:audienceRelationshipStageOrder 1 ; codion:audienceRelationshipConfidence "0.90"^^xsd:float ; codion:relationshipInvolvesAudience ex:voters .
+ex:rel6 a codion:AudienceRelationship ; codion:audienceRelationshipType "AffectedAudience" ; codion:audienceRelationshipStageOrder 6 ; codion:audienceRelationshipConfidence "0.40"^^xsd:float ; codion:relationshipInvolvesAudience ex:voters .
+ex:rel2 a codion:AudienceRelationship ; codion:audienceRelationshipType "PotentialAudience" ; codion:audienceRelationshipStageOrder 2 ; codion:audienceRelationshipConfidence "0.85"^^xsd:float ; codion:relationshipInvolvesAudience ex:voters .
+ex:rel5 a codion:AudienceRelationship ; codion:audienceRelationshipType "EngagedAudience"  ; codion:audienceRelationshipStageOrder 5 ; codion:audienceRelationshipConfidence "0.55"^^xsd:float ; codion:relationshipInvolvesAudience ex:voters .
+ex:rel3 a codion:AudienceRelationship ; codion:audienceRelationshipType "ReachedAudience"  ; codion:audienceRelationshipStageOrder 3 ; codion:audienceRelationshipConfidence "0.80"^^xsd:float ; codion:relationshipInvolvesAudience ex:voters .
+ex:campaign1 codion:audienceRelationshipInstance ex:rel1, ex:rel2, ex:rel3, ex:rel4, ex:rel5, ex:rel6 .
